@@ -109,7 +109,7 @@ task PackageNuGet -depends Package {
     exec { & $nuget pack $projectNuspec -OutputDirectory $packageDir }
 }
 
-# Deploy the JOReportingService locally
+# Deploy the project locally
 task DeployProject -depends PackageProject {
     cd $projectPackageDir
     & ".\Deploy.ps1"
