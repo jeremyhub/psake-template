@@ -106,12 +106,12 @@ task PackageNuGet -depends Package {
     Write-Host "Create $projectName nuget manifest"
     CreateNuGetManifest $version $projectName $projectNuspec $projectNuspecTitle $projectNuspecDescription
     Write-Host "Package $projectNuspec with base path $projectPackageDir and package dir $packageDir"
-    & $nuget pack $projectNuspec -OutputDirectory $packageDir # -BasePath $projectPackageDir 
+    exec { & $nuget pack $projectNuspec -OutputDirectory $packageDir }
 }
 
 # Deploy the JOReportingService locally
-task DeployJOReportingService -depends PackageJOReportingService {
-    cd $JOReportingServicePackageDir 
+task DeployProject -depends PackageProject {
+    cd $projectPackageDir
     & ".\Deploy.ps1"
     cd $baseDir
 }
