@@ -15,25 +15,25 @@ properties {
     $companyName = "yourCompany"
     $projectName = "projectName"
     $projectConfig = "Release"
-    $unitTestProject = "unitTestProjectName"
+    $unitTestProject = "$projectName.Tests"
     $unitTestAssembly = "$sourceDir\$unitTestProject\bin\$projectConfig\$unitTestProject.dll"
 
     # if not provided, default to 1.0.0.0
-    $if(!$version)
+    if(!$version)
     {
         $version = "1.0.0.0"
     }
-    
+
+    # tools
+    # change testExecutable as needed, defaults to mstest
+    $testExecutable = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
+    $nuget = "$sourceDir\packages\NuGet.CommandLine.2.5.0\tools\NuGet.exe"
+
     # if not provided, default to Dev
     if (!$nuGetSuffix)
     {
         $nuGetSuffix = "Dev"
     }
-
-    # tools
-    # change testExecutable as needed, defaults to mstest
-    $testExecutable = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\mstest.exe"
-    $nuget = "$baseDir\Tools\NuGet.exe"
 
     # source locations
     $projectSourceDir = "$sourceDir\$projectName\"
@@ -42,7 +42,7 @@ properties {
     $projectPackageDir = "$packageDir\$projectName\"
 
     # nuspec files
-    $projectNuspec = "$packageDir\$projectName.nuspec"
+    $projectNuspec = "$projectPackageDir\$projectName.nuspec"
     $projectNuspecTitle = "$projectName title"
     $projectNuspecDescription = "$projectName description"
 
@@ -56,23 +56,23 @@ task default -depends UnitTest, PackageNuGet
 task Init {
     Write-Host "Deleting the package directory"
     DeleteFile $packageDir
-	Write-Host "Deleting the test directory"
+    Write-Host "Deleting the test directory"
     DeleteFile $testDir
 }
 
 # Compile the Project solution and any other solutions necessary
 task Compile -depends Init {
     Write-Host "Cleaning the solution"
-    msbuild /t:clean /v:q /nologo /p:Configuration=$projectConfig $sourceDir\$projectName.sln
+    exec { msbuild /t:clean /v:q /nologo /p:Configuration=$projectConfig $sourceDir\$projectName.sln }
     DeleteFile $error_dir
     Write-Host "Building the solution"
-    msbuild /t:build /v:q /nologo /p:Configuration=$projectConfig $sourceDir\$projectName.sln
+    exec { msbuild /t:build /v:q /nologo /p:Configuration=$projectConfig $sourceDir\$projectName.sln }
 }
 
 # Execute unit tests
 # Change as necessary if using a different test tool
 task UnitTest -depends Compile {
-    & $testExecutable /testcontainer:$unitTestAssembly | Out-Null
+    exec { & $testExecutable /testcontainer:$unitTestAssembly | Out-Null }
 }
 
 # TODO
@@ -105,7 +105,8 @@ task Package -depends PackageProject { #, PackageApiProject, PackageDatabase {
 task PackageNuGet -depends Package {    
     Write-Host "Create $projectName nuget manifest"
     CreateNuGetManifest $version $projectName $projectNuspec $projectNuspecTitle $projectNuspecDescription
-    & $nuget pack $packageNuspec -BasePath $projectPackageDir -OutputDirectory $packageDir
+    Write-Host "Package $projectNuspec with base path $projectPackageDir and package dir $packageDir"
+    & $nuget pack $projectNuspec -OutputDirectory $packageDir # -BasePath $projectPackageDir 
 }
 
 # Deploy the JOReportingService locally
@@ -164,9 +165,9 @@ function global:CreateNuGetManifest($version, $applicationName, $filename, $titl
     <version>$version</version>
     <authors>$companyName</authors>
     <owners>$companyName</owners>
-    <licenseUrl>yourlicenseurl</licenseUrl>
-    <projectUrl>yourprojecturl</projectUrl>
-    <iconUrl>youriconurl</iconUrl>
+    <licenseUrl>http://google.com</licenseUrl>
+    <projectUrl>http://google.com</projectUrl>
+    <iconUrl>http://google.com</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description</description>
     <summary>$description</summary>
