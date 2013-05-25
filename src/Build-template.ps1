@@ -165,9 +165,9 @@ function global:CreateNuGetManifest($version, $applicationName, $filename, $titl
     <version>$version</version>
     <authors>$companyName</authors>
     <owners>$companyName</owners>
-    <licenseUrl>http://google.com</licenseUrl>
-    <projectUrl>http://google.com</projectUrl>
-    <iconUrl>http://google.com</iconUrl>
+    <licenseUrl>http://www.$applicationName.com</licenseUrl>
+    <projectUrl>http://www.$applicationName.com</projectUrl>
+    <iconUrl>http://www.$applicationName.com</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description</description>
     <summary>$description</summary>
