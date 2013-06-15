@@ -106,7 +106,7 @@ task PackageNuGet -depends Package {
     Write-Host "Create $projectName nuget manifest"
     CreateNuGetManifest $version $projectName $projectNuspec $projectNuspecTitle $projectNuspecDescription
     Write-Host "Package $projectNuspec with base path $projectPackageDir and package dir $packageDir"
-    exec { & $nuget pack $projectNuspec -OutputDirectory $packageDir }
+    exec { & $nuget pack $projectNuspec -OutputDirectory $packageDir -Verbosity quiet}
 }
 
 # Deploy the project locally
